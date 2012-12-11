@@ -1,0 +1,1 @@
+/*  To obtain MD5 of a file by input memory address  of a file,return 16 char array. Each char stores an integer  ranges from 0-255 and can be mapped into hex-representation   of stored value, such as 0xa1*/voidgetFileMD5(FILE *fp, char *dep);

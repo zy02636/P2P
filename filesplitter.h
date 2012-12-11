@@ -1,0 +1,1 @@
+#ifndef STD_H#define TSD_H#include <stdlib.h>#include <stdio.h>#include <string.h>#endif/*    Splite a file into a collection of segments with defined size, MD5, file MD5*/void splitFile(FILE *fp);
