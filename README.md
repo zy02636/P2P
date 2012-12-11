@@ -34,3 +34,7 @@ Log
    Today's work list:
    1. Check codes of previous day's work, and optimize them.
    2. Perhaps add some new functions. :)
+   
+   1.Reorganise the project seems much nicer.
+   2.Split txt file and synthesis segments works fine, but in terms of jpg and docx or other forms
+     of file, synthesis function does not work properly..em needs to be fixed in the following days.

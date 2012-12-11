@@ -8,9 +8,8 @@
 #include <string.h>
 #endif
 
-
 #include "filesplitter.h"
-
+#include "filesynthesis.h"
 /*
   define a file structure to store meta data, and each 
   file will have at least one segment.
