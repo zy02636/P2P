@@ -10,6 +10,14 @@
 
 #include "filesplitter.h"
 #include "filesynthesis.h"
+
+#ifndef COM_H
+#define COM_H
+
+#include "common.h"
+
+#endif
+
 /*
   define a file structure to store meta data, and each 
   file will have at least one segment.

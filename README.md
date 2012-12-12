@@ -38,3 +38,13 @@ Log
    1.Reorganise the project seems much nicer.
    2.Split txt file and synthesis segments works fine, but in terms of jpg and docx or other forms
      of file, synthesis function does not work properly..em needs to be fixed in the following days.
+	 
+2012-12-12:
+    Heavy snow! WOW, that is cold.
+	Since I may have to test an app today, so not too much improvement will be added to this program. 
+	1. Add logic control of user input to chose which function to execute(just to avoid recomplie the program)
+	2. If get enough time, check where split and synthesis file does not work properly
+
+	1. Add branch control, avoid recomplie,make the program easy to manipulate
+	2. Use function: fflush(fp) to solve the weired empty segment problem
+	3. Merge file segments still cannot work
