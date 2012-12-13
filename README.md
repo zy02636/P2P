@@ -48,3 +48,13 @@ Log
 	1. Add branch control, avoid recomplie,make the program easy to manipulate
 	2. Use function: fflush(fp) to solve the weired empty segment problem
 	3. Merge file segments still cannot work
+	
+2012-12-13:
+    Thursday is kind of busy. During the lunch time I will try to figure out the issue of bytes losing when
+	synthesising file segments.
+	For the moment, hint is that file has two different structure: one is ASCII file and another
+	is binary file structure. I have switch read/write mode to binary mode, this change solves the issue
+	of segment size unalignment. However merged image still does not work well. LOL
+
+    After sevral hours trial...damn, i have check the file before split and after synthesis.. their byte size
+    is same, and their MD5 are also the same!!damn...	

@@ -18,16 +18,7 @@ main(void){
 				//construct a relative file path include file name
 				sprintf(filePath,"%s%s",FILE_PATH,fileName);
 				
-				FILE *fp;
-				if((fp = fopen(filePath,"rb")) != NULL){
-					//Split a file into a collection of small segments with
-					//defined file size
-					splitFile(fp);
-					fclose(fp);
-				}else{
-					printf("Open file fails.");
-					break;
-				}
+				splitFile(filePath);
 			}else if(choice[0] == 'b'){
 				char fileName[15];
 				printf("Please enter file name:");

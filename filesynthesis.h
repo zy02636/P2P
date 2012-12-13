@@ -14,6 +14,12 @@
 
 #endif
 
+#ifndef HASHER_H
+#define HASHER_H
+
+#include "hasher.h"
+
+#endif
 /*
     Splite a file into a collection of segments with defined size, MD5, file MD5
 */
