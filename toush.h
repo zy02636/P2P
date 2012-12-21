@@ -6,10 +6,16 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
+#include <process.h>
+
 #endif
 
+//project head file
 #include "filesplitter.h"
 #include "filesynthesis.h"
+#include "server.h"
+#include "client.h"
+
 
 #ifndef COM_H
 #define COM_H
