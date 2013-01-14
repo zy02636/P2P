@@ -1,1 +1,177 @@
-#include "../server.h"void startWin32Server(){	WORD wVersionRequested;    WSADATA wsaData;    int ret, nLeft, length;    SOCKET sListen, sServer; //ÕìÌıÌ×½Ó×Ö£¬Á¬½ÓÌ×½Ó×Ö    struct sockaddr_in saServer, saClient; //µØÖ·ĞÅÏ¢       char *ptr;//ÓÃÓÚ±éÀúĞÅÏ¢µÄÖ¸Õë       //WinSock³õÊ¼»¯    wVersionRequested = MAKEWORD(2,2); //Ï£ÍûÊ¹ÓÃµÄWinSock DLL µÄ°æ±¾    ret = WSAStartup(wVersionRequested, &wsaData);    if(ret != 0){        printf("WSAStartup() failed!\n");        return;    }    //´´½¨Socket,Ê¹ÓÃTCPĞ­Òé    sListen = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);    if (sListen == INVALID_SOCKET){        WSACleanup();        printf("socket() faild!\n");        return;    }    //¹¹½¨±¾µØµØÖ·ĞÅÏ¢    saServer.sin_family = AF_INET; //µØÖ·¼Ò×å    saServer.sin_port = htons(SERVER_PORT); //×¢Òâ×ª»¯ÎªÍøÂç×Ö½ÚĞò    saServer.sin_addr.S_un.S_addr = htonl(INADDR_ANY); //Ê¹ÓÃINADDR_ANY Ö¸Ê¾ÈÎÒâµØÖ·      //°ó¶¨    ret = bind(sListen, (struct sockaddr *)&saServer, sizeof(saServer));    if (ret == SOCKET_ERROR){        printf("bind() faild! code:%d\n", WSAGetLastError());        closesocket(sListen); //¹Ø±ÕÌ×½Ó×Ö        WSACleanup();        return;    }      //ÕìÌıÁ¬½ÓÇëÇó    ret = listen(sListen, 5);    if (ret == SOCKET_ERROR){        printf("listen() faild! code:%d\n", WSAGetLastError());        closesocket(sListen); //¹Ø±ÕÌ×½Ó×Ö        return;    }      printf("Waiting for client connecting!\n");    printf("Tips: Ctrl+c to quit!\n");    //×èÈûµÈ´ı½ÓÊÜ¿Í»§¶ËÁ¬½Ó    while(1){  //¼àÌı¿Í»§¶Ë£¬ÓÀÔ¶²»Í£Ö¹£¬ËùÒÔ£¬ÔÚ±¾ÏîÄ¿ÖĞ£¬ÎÒÃÇÃ»ÓĞĞÄÌø°ü¡£{		length = sizeof(saClient);		sServer = accept(sListen, (struct sockaddr *)&saClient, &length);		if (sServer == INVALID_SOCKET){			printf("accept() faild! code:%d\n", WSAGetLastError());			closesocket(sListen); //¹Ø±ÕÌ×½Ó×Ö			WSACleanup();			return;		}       		char receiveMessage[5*1024];		nLeft = sizeof(receiveMessage);		ptr = (char *)&receiveMessage;			while(nLeft>0){			//½ÓÊÕÊı¾İ			ret = recv(sServer, ptr, 5000, 0);			if (ret == SOCKET_ERROR){				printf("recv() failed!\n");				return;			}			if (ret == 0){ //¿Í»§¶ËÒÑ¾­¹Ø±ÕÁ¬½Ó				printf("Client has closed the connection\n");				break;			}			nLeft -= ret;			ptr += ret;		}  		printf("receive message:%s\n", receiveMessage);//´òÓ¡ÎÒÃÇ½ÓÊÕµ½µÄÏûÏ¢¡£ 	} }
+#include "../server.h"
+
+/*
+void startWin32Server(){
+    WORD wVersionRequested;
+    WSADATA wsaData;
+    int ret, nLeft, length;
+    SOCKET sListen, sServer; 
+
+    struct sockaddr_in saServer, saClient;  
+    char *ptr; 
+  
+    wVersionRequested = MAKEWORD(2,2); 
+    ret = WSAStartup(wVersionRequested, &wsaData);
+    if(ret != 0){
+        printf("WSAStartup() failed!\n");
+        return;
+    }
+  
+    sListen = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
+    if (sListen == INVALID_SOCKET){
+        WSACleanup();
+        printf("socket() faild!\n");
+        return;
+    }
+
+    saServer.sin_family = AF_INET; 
+    saServer.sin_port = htons(SERVER_PORT);
+    saServer.sin_addr.S_un.S_addr = htonl(INADDR_ANY);
+  
+
+    ret = bind(sListen, (struct sockaddr *)&saServer, sizeof(saServer));
+    if (ret == SOCKET_ERROR){
+        printf("bind() faild! code:%d\n", WSAGetLastError());
+        closesocket(sListen); 
+        WSACleanup();
+        return;
+    }
+  
+
+    ret = listen(sListen, 5);
+    if (ret == SOCKET_ERROR){
+        printf("listen() faild! code:%d\n", WSAGetLastError());
+        closesocket(sListen);
+        return;
+    }
+  
+    printf("Waiting for client connecting!\n");
+    printf("Tips: Ctrl+c to quit!\n");
+
+    while(1){ 
+		length = sizeof(saClient);
+		sServer = accept(sListen, (struct sockaddr *)&saClient, &length);
+		if (sServer == INVALID_SOCKET){
+			printf("accept() faild! code:%d\n", WSAGetLastError());
+			closesocket(sListen);
+			WSACleanup();
+			return;
+		}       
+		char receiveMessage[5*1024];
+		nLeft = sizeof(receiveMessage);
+		ptr = (char *)&receiveMessage;
+	
+		while(nLeft>0){
+
+			ret = recv(sServer, ptr, 5000, 0);
+			if (ret == SOCKET_ERROR){
+				printf("recv() failed!\n");
+				return;
+			}
+			if (ret == 0){ 
+				printf("Client has closed the connection\n");
+				break;
+			}
+			nLeft -= ret;
+			ptr += ret;
+		}  
+		printf("receive message:%s\n", receiveMessage);
+ 
+	} 
+}*/
+
+void startLinuxServer(){
+    //è®¾ç½®ä¸€ä¸ªsocketåœ°å€ç»“æ„server_addr,ä»£è¡¨æœåŠ¡å™¨internetåœ°å€, ç«¯å£
+    struct sockaddr_in server_addr;
+    //å®šä¹‰å®¢æˆ·ç«¯çš„socketåœ°å€ç»“æ„client_addr
+    struct sockaddr_in client_addr;
+    bzero(&server_addr,sizeof(server_addr)); //æŠŠä¸€æ®µå†…å­˜åŒºçš„å†…å®¹å…¨éƒ¨è®¾ç½®ä¸º0
+    server_addr.sin_family = AF_INET;
+    server_addr.sin_addr.s_addr = htons(INADDR_ANY);
+    server_addr.sin_port = htons(HELLO_WORLD_SERVER_PORT);
+
+    //åˆ›å»ºç”¨äºinternetçš„æµåè®®(TCP)socket,ç”¨server_socketä»£è¡¨æœåŠ¡å™¨socket
+    int server_socket = socket(PF_INET,SOCK_STREAM,0);
+    if( server_socket < 0)
+    {
+        printf("Create Socket Failed!");
+        exit(1);
+    }
+
+   int opt =1;
+   setsockopt(server_socket,SOL_SOCKET,SO_REUSEADDR,&opt,sizeof(opt));
+
+    
+    //æŠŠsocketå’Œsocketåœ°å€ç»“æ„è”ç³»èµ·æ¥
+    if( bind(server_socket,(struct sockaddr*)&server_addr,sizeof(server_addr)))
+    {
+        printf("Server Bind Port : %d Failed!", HELLO_WORLD_SERVER_PORT); 
+        exit(1);
+    }
+
+    //server_socketç”¨äºç›‘å¬
+    if(listen(server_socket, LENGTH_OF_LISTEN_QUEUE))
+    {
+        printf("Server Listen Failed!"); 
+        exit(1);
+    }
+
+    printf("accept client %s/n",inet_ntoa(client_addr.sin_addr));  
+    while (1) //æœåŠ¡å™¨ç«¯è¦ä¸€ç›´è¿è¡Œ
+    {
+        socklen_t length = sizeof(client_addr);
+
+        //æ¥å—ä¸€ä¸ªåˆ°server_socketä»£è¡¨çš„socketçš„ä¸€ä¸ªè¿æ¥
+        //å¦‚æœæ²¡æœ‰è¿æ¥è¯·æ±‚,å°±ç­‰å¾…åˆ°æœ‰è¿æ¥è¯·æ±‚--è¿™æ˜¯acceptå‡½æ•°çš„ç‰¹æ€§
+        //acceptå‡½æ•°è¿”å›ä¸€ä¸ªæ–°çš„socket,è¿™ä¸ªsocket(new_server_socket)ç”¨äºåŒè¿æ¥åˆ°çš„å®¢æˆ·çš„é€šä¿¡
+        //new_server_socketä»£è¡¨äº†æœåŠ¡å™¨å’Œå®¢æˆ·ç«¯ä¹‹é—´çš„ä¸€ä¸ªé€šä¿¡é€šé“
+        //acceptå‡½æ•°æŠŠè¿æ¥åˆ°çš„å®¢æˆ·ç«¯ä¿¡æ¯å¡«å†™åˆ°å®¢æˆ·ç«¯çš„socketåœ°å€ç»“æ„client_addrä¸­
+        int new_server_socket = accept(server_socket,(struct sockaddr*)&client_addr,&length);
+        if ( new_server_socket < 0)
+        {
+            printf("Server Accept Failed!\n");
+            break;
+        }
+        
+        char buffer[BUFFER_SIZE];
+        bzero(buffer, BUFFER_SIZE);
+        length = recv(new_server_socket,buffer,BUFFER_SIZE,0);
+        if (length < 0)
+        {
+            printf("Server Recieve Data Failed!\n");
+            break;
+        }
+        char file_name[FILE_NAME_MAX_SIZE+1];
+        bzero(file_name, FILE_NAME_MAX_SIZE+1);
+        strncpy(file_name, buffer, strlen(buffer));
+
+        printf("%s\n",file_name);
+        FILE * fp = fopen(file_name,"r");
+        if(NULL == fp )
+        {
+            printf("File:\t%s Not Found\n", file_name);
+        }
+        else
+        {
+            bzero(buffer, BUFFER_SIZE);
+            int file_block_length = 0;
+
+            while( (file_block_length = fread(buffer,sizeof(char),BUFFER_SIZE,fp))>0){
+                printf("file_block_length = %d\n",file_block_length);
+                //å‘é€bufferä¸­çš„å­—ç¬¦ä¸²åˆ°new_server_socket,å®é™…æ˜¯ç»™å®¢æˆ·ç«¯
+                if(send(new_server_socket,buffer,file_block_length,0)<0)
+                {
+                    printf("Send File:\t%s Failed\n", file_name);
+                    break;
+                }
+                bzero(buffer, BUFFER_SIZE);
+			}
+            fclose(fp);
+            printf("File:\t%s Transfer Finished\n",file_name);
+        }
+        //å…³é—­ä¸å®¢æˆ·ç«¯çš„è¿æ¥
+        close(new_server_socket);
+    }
+    //å…³é—­ç›‘å¬ç”¨çš„socket
+    close(server_socket);
+}
