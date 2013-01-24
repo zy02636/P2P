@@ -6,4 +6,4 @@
 #define SYN_FILE_PATH "../res/syn/"
 #define SYN_FILE_PATH "../res/syn/"
 #define SERVER_FILE_PATH  "../res/server/"
-#define CLIENT_FILE_PATH "../res/client/"
+#define CLIENT_FILE_PATH "../res/client/" //where client file stores
