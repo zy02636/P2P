@@ -18,8 +18,10 @@
 	#include <netinet/in.h>    // for sockaddr_in
 	#include <sys/types.h>    // for socket
 	#include <sys/socket.h>
-
-	void startLinuxClient();
+        #include <arpa/inet.h>
+	#include <unistd.h>
+        void startLinuxClient();
+        
 #endif
 
 #ifndef COM_H

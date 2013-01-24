@@ -4,7 +4,6 @@ CFLAGS  = -c -Wall -O -g
 
 $(EXEC):toush.o filesplitter.o filesynthesis.o hasher.o md5.o server.o client.o
 	$(CC) -o $(EXEC) toush.o filesplitter.o filesynthesis.o hasher.o md5.o server.o client.o 
-	#-lwsock32
 
 toush.o:../filesplitter.h ../filesynthesis.h toush.c
 	$(CC) $(CFLAGS) toush.c	
@@ -27,6 +26,7 @@ server.o:../server.h server.c
 client.o:../client.h client.c
 	$(CC) $(CFLAGS) client.c
 	
-clean:
+cleanObj:
+	rm -rf *.o
+cleanAll:
 	rm -rf *.o $(EXEC)
-

@@ -18,7 +18,8 @@
 	#include <netinet/in.h>    // for sockaddr_in
 	#include <sys/types.h>    // for socket
 	#include <sys/socket.h> 
-
+        #include <arpa/inet.h>
+        #include <unistd.h>
 	void startLinuxServer();
 
 #endif

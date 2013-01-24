@@ -108,13 +108,13 @@ void startLinuxClient(){
     bzero(&server_addr,sizeof(server_addr));
     server_addr.sin_family = AF_INET;
     
-	/*
-		if(inet_aton(,&server_addr.sin_addr) == 0) //服务器的IP地址来自程序的参数
-		{
-		    printf("Server IP Address Error!\n");
-		    exit(1);
-		}
-	*/
+    /*
+      if(inet_aton(,&server_addr.sin_addr) == 0) //服务器的IP地址来自程序的参数
+      {
+      printf("Server IP Address Error!\n");
+      exit(1);
+      }
+    */
     server_addr.sin_port = htons(HELLO_WORLD_SERVER_PORT);
     socklen_t server_addr_length = sizeof(server_addr);
     //向服务器发起连接,连接成功后client_socket代表了客户机和服务器的一个socket连接
@@ -127,11 +127,13 @@ void startLinuxClient(){
     char file_name[FILE_NAME_MAX_SIZE+1];
     bzero(file_name, FILE_NAME_MAX_SIZE+1);
     printf("Please Input File Name On Server:\t");
-    int result = scanf("%s", file_name);
-    
     char buffer[BUFFER_SIZE];
     bzero(buffer,BUFFER_SIZE);
-    strncpy(buffer, file_name, strlen(file_name)>BUFFER_SIZE?BUFFER_SIZE:strlen(file_name));
+    int result = scanf("%s", buffer);
+    printf("Client read file state: %d\n",result);
+
+    //strncpy(buffer, file_name, strlen(file_name) > BUFFER_SIZE ? BUFFER_SIZE:strlen(file_name));
+    sprintf(file_name,"%s%s",CLIENT_FILE_PATH,buffer);
     //向服务器发送buffer中的数据
     send(client_socket,buffer,BUFFER_SIZE,0);
 
@@ -145,7 +147,7 @@ void startLinuxClient(){
     //从服务器接收数据到buffer中
     bzero(buffer,BUFFER_SIZE);
     int length = 0;
-    while( length = recv(client_socket,buffer,BUFFER_SIZE,0))
+    while( (length = recv(client_socket,buffer,BUFFER_SIZE,0)) > 0)
     {
         if(length < 0)
         {
@@ -162,8 +164,7 @@ void startLinuxClient(){
         bzero(buffer,BUFFER_SIZE);    
     }
     printf("Recieve File:\t %s From Server Finished\n",file_name);
-    
-    close(fp);
+    fclose(fp);
     //关闭socket
     close(client_socket);
 }

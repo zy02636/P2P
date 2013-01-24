@@ -44,8 +44,8 @@ void synthesisFile(char *fileName){
 			char *buffer = malloc(sizeof(char) * segSize);
 	
 	        //read segment bytes into buffer
-		    int result = fread(buffer,segSize,1,fp);
-			
+			int result = fread(buffer,segSize,1,fp);
+			printf("Synthesis file state: %d \n",result);
 			//concatenate segment buffer to file buffer
 			strcat(fbuffer,buffer);
 			

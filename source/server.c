@@ -80,6 +80,9 @@ void startWin32Server(){
 	} 
 }*/
 
+/*
+   Linux OS based socket server
+*/
 void startLinuxServer(){
     //设置一个socket地址结构server_addr,代表服务器internet地址, 端口
     struct sockaddr_in server_addr;
@@ -143,13 +146,14 @@ void startLinuxServer(){
         }
         char file_name[FILE_NAME_MAX_SIZE+1];
         bzero(file_name, FILE_NAME_MAX_SIZE+1);
-        strncpy(file_name, buffer, strlen(buffer));
+	sprintf(file_name,"%s%s",SERVER_FILE_PATH,buffer);
+        //strncpy(file_name, buffer, strlen(buffer));
 
         printf("%s\n",file_name);
         FILE * fp = fopen(file_name,"r");
         if(NULL == fp )
         {
-            printf("File:\t%s Not Found\n", file_name);
+            printf("File:\t %s Not Found\n", file_name);
         }
         else
         {
