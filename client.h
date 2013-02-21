@@ -11,8 +11,6 @@
 
     #include <winsock2.h>
 
-    void startWin32Client();
-
 #else
     
 	#include <netinet/in.h>    // for sockaddr_in
@@ -20,9 +18,10 @@
 	#include <sys/socket.h>
         #include <arpa/inet.h>
 	#include <unistd.h>
-        void startLinuxClient();
         
 #endif
+
+void startClient();
 
 #ifndef COM_H
 #define COM_H
@@ -31,8 +30,6 @@
 
 #endif
 
-#define HELLO_WORLD_SERVER_PORT    6666
+#define CONNECT_PORT    8888
 #define BUFFER_SIZE 1024
 #define FILE_NAME_MAX_SIZE 512
-
-

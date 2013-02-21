@@ -3,7 +3,7 @@
 /* windows client */
 
 void
-startWin32Client(){
+startClient(){
 	printf("File you wanna to sent: ");
         char fileName[15]; //buffer overflow attack not be considered yet
 	char filePath[25];

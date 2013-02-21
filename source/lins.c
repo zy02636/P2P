@@ -3,55 +3,63 @@
 /*
    Linux OS based socket server
 */
-void startLinuxServer(){
-    //设置一个socket地址结构server_addr,代表服务器internet地址, 端口
+void 
+startServer(){
+    //add a socket address struct for server, server_addr
+    //to store IP address and port number
     struct sockaddr_in server_addr;
-    //定义客户端的socket地址结构client_addr
+
+    //define client socket address struct
     struct sockaddr_in client_addr;
-    bzero(&server_addr,sizeof(server_addr)); //把一段内存区的内容全部设置为0
+    bzero(&server_addr,sizeof(server_addr)); //
     server_addr.sin_family = AF_INET;
     server_addr.sin_addr.s_addr = htons(INADDR_ANY);
-    server_addr.sin_port = htons(HELLO_WORLD_SERVER_PORT);
+    server_addr.sin_port = htons(SERVER_PORT);
 
-    //创建用于internet的流协议(TCP)socket,用server_socket代表服务器socket
+    //define TCP socket bases on Internet
+    //server_socket represents the server socket
     int server_socket = socket(PF_INET,SOCK_STREAM,0);
-    if( server_socket < 0)
-    {
+    if(server_socket < 0){
         printf("Create Socket Failed!");
         exit(1);
     }
 
-   int opt =1;
-   setsockopt(server_socket,SOL_SOCKET,SO_REUSEADDR,&opt,sizeof(opt));
+    int opt = 1;
+    setsockopt(server_socket,SOL_SOCKET,SO_REUSEADDR,&opt,sizeof(opt));
 
-    
-    //把socket和socket地址结构联系起来
-    if( bind(server_socket,(struct sockaddr*)&server_addr,sizeof(server_addr)))
-    {
-        printf("Server Bind Port : %d Failed!", HELLO_WORLD_SERVER_PORT); 
+    //set socket address option to avoid bind error
+    int portUse = 1;
+    if((setsockopt(server_socket,SOL_SOCKET,SO_REUSEADDR,&portUse,sizeof(portUse))) < 0){
+        printf ("%s\n","setsockopt failed");
         exit(1);
     }
 
-    //server_socket用于监听
-    if(listen(server_socket, LENGTH_OF_LISTEN_QUEUE))
-    {
+    //bind socket with socket address struct
+    int bindRresult = bind(server_socket,(struct sockaddr*)&server_addr,sizeof(server_addr));
+    printf ("%s%d\n","Bind result",bindRresult);
+    if(bind(server_socket,(struct sockaddr*)&server_addr,sizeof(server_addr)) > 0){
+        printf("Server Bind Port : %d Failed!", SERVER_PORT); 
+        exit(1);
+    }
+
+    //listening on server_socket
+    if(listen(server_socket, LENGTH_OF_LISTEN_QUEUE)){
         printf("Server Listen Failed!"); 
         exit(1);
     }
 
-    printf("accept client %s/n",inet_ntoa(client_addr.sin_addr));  
-    while (1) //服务器端要一直运行
-    {
+    printf("accept client, node at IP: %s:%d \n",inet_ntoa(client_addr.sin_addr),SERVER_PORT);  
+    //server side keep running
+    while(1){
         socklen_t length = sizeof(client_addr);
-
-        //接受一个到server_socket代表的socket的一个连接
-        //如果没有连接请求,就等待到有连接请求--这是accept函数的特性
-        //accept函数返回一个新的socket,这个socket(new_server_socket)用于同连接到的客户的通信
-        //new_server_socket代表了服务器和客户端之间的一个通信通道
-        //accept函数把连接到的客户端信息填写到客户端的socket地址结构client_addr中
+     
+        //a socket with a server_socket is a connection
+        //if no connect request, then accpet function will wait unitl client connects
+        //accept function returns a new socket and can be used to communicate with client
+        //new_server_socket is a new channel between the server and a client
+        //accept function fill in connection information in the socket address struct of client
         int new_server_socket = accept(server_socket,(struct sockaddr*)&client_addr,&length);
-        if ( new_server_socket < 0)
-        {
+        if (new_server_socket < 0){
             printf("Server Accept Failed!\n");
             break;
         }
@@ -59,43 +67,38 @@ void startLinuxServer(){
         char buffer[BUFFER_SIZE];
         bzero(buffer, BUFFER_SIZE);
         length = recv(new_server_socket,buffer,BUFFER_SIZE,0);
-        if (length < 0)
-        {
+        if (length < 0){
             printf("Server Recieve Data Failed!\n");
             break;
         }
         char file_name[FILE_NAME_MAX_SIZE+1];
         bzero(file_name, FILE_NAME_MAX_SIZE+1);
-	sprintf(file_name,"%s%s",SERVER_FILE_PATH,buffer);
+        sprintf(file_name,"%s%s",SERVER_FILE_PATH,buffer);
         //strncpy(file_name, buffer, strlen(buffer));
 
         printf("%s\n",file_name);
         FILE * fp = fopen(file_name,"r");
-        if(NULL == fp )
-        {
+        if(NULL == fp ){
             printf("File:\t %s Not Found\n", file_name);
-        }
-        else
-        {
+        } else {
             bzero(buffer, BUFFER_SIZE);
             int file_block_length = 0;
 
-            while( (file_block_length = fread(buffer,sizeof(char),BUFFER_SIZE,fp))>0){
+            while((file_block_length = fread(buffer,sizeof(char),BUFFER_SIZE,fp))>0){
                 printf("file_block_length = %d\n",file_block_length);
-                //发送buffer中的字符串到new_server_socket,实际是给客户端
-                if(send(new_server_socket,buffer,file_block_length,0)<0)
-                {
-                    printf("Send File:\t%s Failed\n", file_name);
-                    break;
+                //set buffer through new_server_socket channel to client
+                if(send(new_server_socket,buffer,file_block_length,0)<0){
+                  printf("Send File:\t%s Failed\n", file_name);
+                  break;
                 }
                 bzero(buffer, BUFFER_SIZE);
-			}
+            }
             fclose(fp);
             printf("File:\t%s Transfer Finished\n",file_name);
-        }
-        //关闭与客户端的连接
-        close(new_server_socket);
+      }
+      //close connection with client
+      close(new_server_socket);
     }
-    //关闭监听用的socket
+    //close server listening socket
     close(server_socket);
 }

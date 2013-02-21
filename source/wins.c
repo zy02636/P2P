@@ -3,7 +3,7 @@
 /* windows socket program */
 
 void 
-startWin32Server(){
+startServer(){
     WORD wVersionRequested;
     WSADATA wsaData;
     int ret, nLeft, length;

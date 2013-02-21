@@ -2,8 +2,8 @@ EXEC = toush
 CC = gcc
 CFLAGS  = -c -Wall -O -g
 
-$(EXEC):toush.o filesplitter.o filesynthesis.o hasher.o md5.o server.o client.o
-	$(CC) -o $(EXEC) toush.o filesplitter.o filesynthesis.o hasher.o md5.o server.o client.o 
+$(EXEC):toush.o filesplitter.o filesynthesis.o hasher.o md5.o lins.o linc.o
+	$(CC) -o $(EXEC) toush.o filesplitter.o filesynthesis.o hasher.o md5.o lins.o linc.o 
 
 toush.o:../filesplitter.h ../filesynthesis.h toush.c
 	$(CC) $(CFLAGS) toush.c	
@@ -20,11 +20,11 @@ hasher.o:../hasher.h ../md5.h hasher.c
 md5.o:../md5.h md5.c
 	$(CC) $(CFLAGS) md5.c
 	
-server.o:../server.h server.c
-	$(CC) $(CFLAGS) server.c
+lins.o:../server.h lins.c
+	$(CC) $(CFLAGS) lins.c
 
-client.o:../client.h client.c
-	$(CC) $(CFLAGS) client.c
+linc.o:../client.h linc.c
+	$(CC) $(CFLAGS) linc.c
 	
 cleanObj:
 	rm -rf *.o

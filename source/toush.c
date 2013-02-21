@@ -40,10 +40,10 @@ main(void){
 	  }
 	}else if(choice[0] == 'c'){
 	  //startWin32Server();
-	  startLinuxServer();
+	  startServer();
 	}else if(choice[0] == 'd'){
 	  //startWin32Client();
-	  startLinuxClient();
+	  startClient();
 	}else{
 	  exit(0);    
 	}
