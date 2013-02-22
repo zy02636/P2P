@@ -18,6 +18,8 @@
 	#include <sys/socket.h> 
         #include <arpa/inet.h>
         #include <unistd.h>
+        #include <pthread.h>
+
 #endif
 
 void startServer();

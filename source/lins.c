@@ -1,6 +1,50 @@
 #include "../server.h"
 
 /*
+    name: send_data
+    func: send data to connected client
+    para: pass_arg					
+    resu: void
+*/
+void* send_data(void *ptr){
+    int client_socketfd;
+    char buffer_send[BUFFER_SIZE];
+    pass_arg *param = (pass_arg *)ptr;
+    client_socketfd = *((int *)param->fd);
+    char * file_name = (char *)param->buffer;
+
+    char file_path[FILE_NAME_MAX_SIZE+1];
+    bzero(file_path, FILE_NAME_MAX_SIZE+1);
+    sprintf(file_path,"%s%s",SERVER_FILE_PATH,file_name);
+   
+    printf("Send file in path: %s\n",file_path);
+    FILE * fp = fopen(file_path,"r");
+    if(NULL == fp ){
+        printf("File:\t %s not found.\n", file_path);
+    } else {
+      bzero(file_name, BUFFER_SIZE);
+      int file_block_length = 0;
+
+      while((file_block_length = fread(buffer_send,sizeof(char),BUFFER_SIZE,fp))>0){
+	  //printf("file_block_length = %d\n, content: %s",file_block_length,buffer_send);
+	  //set buffer through new_server_socket channel to client
+	  printf ("client_socketfd: %d\n",client_socketfd);
+	  if(send(client_socketfd,buffer_send,file_block_length,0) < 0){
+	      printf("Send file:\t%s failed\n", file_path);
+	      break;
+  	  }
+	  bzero(buffer_send, BUFFER_SIZE);
+      }
+      fclose(fp);
+      printf("File:\t%s transfer finished.\n",file_path);
+    }
+    //close connection with client
+
+    close(client_socketfd);
+    pthread_exit(NULL);
+}
+
+/*
    Linux OS based socket server
 */
 void 
@@ -18,9 +62,9 @@ startServer(){
 
     //define TCP socket bases on Internet
     //server_socket represents the server socket
-    int server_socket = socket(PF_INET,SOCK_STREAM,0);
+    int server_socket = socket(AF_INET,SOCK_STREAM,0);
     if(server_socket < 0){
-        printf("Create Socket Failed!");
+        printf("Create socket failed!");
         exit(1);
     }
 
@@ -38,13 +82,12 @@ startServer(){
     int bindRresult = bind(server_socket,(struct sockaddr*)&server_addr,sizeof(server_addr));
     printf ("%s%d\n","Bind result",bindRresult);
     if(bind(server_socket,(struct sockaddr*)&server_addr,sizeof(server_addr)) > 0){
-        printf("Server Bind Port : %d Failed!", SERVER_PORT); 
+        printf("Server bind port : %d failed!", SERVER_PORT); 
         exit(1);
     }
-
     //listening on server_socket
     if(listen(server_socket, LENGTH_OF_LISTEN_QUEUE)){
-        printf("Server Listen Failed!"); 
+        printf("Server listen failed!"); 
         exit(1);
     }
 
@@ -58,47 +101,32 @@ startServer(){
         //accept function returns a new socket and can be used to communicate with client
         //new_server_socket is a new channel between the server and a client
         //accept function fill in connection information in the socket address struct of client
-        int new_server_socket = accept(server_socket,(struct sockaddr*)&client_addr,&length);
-        if (new_server_socket < 0){
-            printf("Server Accept Failed!\n");
-            break;
+        int new_client_socket[1];
+       	new_client_socket[0] = accept(server_socket,(struct sockaddr*)&client_addr,&length);
+	printf ("new_client_socket: %d\n",*new_client_socket);
+        if (*new_client_socket < 0){
+            printf("Server accept failed!\n");
+            continue;
         }
         
+	//target send file name
         char buffer[BUFFER_SIZE];
         bzero(buffer, BUFFER_SIZE);
-        length = recv(new_server_socket,buffer,BUFFER_SIZE,0);
+        length = recv(*new_client_socket,buffer,BUFFER_SIZE,0);
         if (length < 0){
-            printf("Server Recieve Data Failed!\n");
+            printf("Server recieve data failed!\n");
             break;
         }
-        char file_name[FILE_NAME_MAX_SIZE+1];
-        bzero(file_name, FILE_NAME_MAX_SIZE+1);
-        sprintf(file_name,"%s%s",SERVER_FILE_PATH,buffer);
-        //strncpy(file_name, buffer, strlen(buffer));
 
-        printf("%s\n",file_name);
-        FILE * fp = fopen(file_name,"r");
-        if(NULL == fp ){
-            printf("File:\t %s Not Found\n", file_name);
-        } else {
-            bzero(buffer, BUFFER_SIZE);
-            int file_block_length = 0;
-
-            while((file_block_length = fread(buffer,sizeof(char),BUFFER_SIZE,fp))>0){
-                printf("file_block_length = %d\n",file_block_length);
-                //set buffer through new_server_socket channel to client
-                if(send(new_server_socket,buffer,file_block_length,0)<0){
-                  printf("Send File:\t%s Failed\n", file_name);
-                  break;
-                }
-                bzero(buffer, BUFFER_SIZE);
-            }
-            fclose(fp);
-            printf("File:\t%s Transfer Finished\n",file_name);
-      }
-      //close connection with client
-      close(new_server_socket);
+        //create different sub thread to response to different client
+	pthread_t thread; 
+	if(pthread_create(&thread, NULL, send_data, &(pass_arg){new_client_socket,buffer}) != 0){
+	    printf ("%s\n","pthread_create fails.\n");
+	    break;
+	}
     }
-    //close server listening socket
-    close(server_socket);
+    //shutdown(new_client_socket[0],2);
+    //close server listening socket and client sending socket
+    shutdown(server_socket,2);
 }
+

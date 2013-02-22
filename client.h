@@ -18,7 +18,7 @@
 	#include <sys/socket.h>
         #include <arpa/inet.h>
 	#include <unistd.h>
-        
+        #include <pthread.h>
 #endif
 
 void startClient();
@@ -30,6 +30,8 @@ void startClient();
 
 #endif
 
-#define CONNECT_PORT    8888
+#define SERVER_IP "127.0.0.1"
+#define SERVER_PORT    1988
 #define BUFFER_SIZE 1024
 #define FILE_NAME_MAX_SIZE 512
+

@@ -10,3 +10,8 @@
 #define RESPONSE_TYPE_LENGTH 5     // 5 chars stores reponse type : 4 for type code, 1 for delimiter
 #define RESPONSE_IP_LIST "0000"
 #define RESPONSE_FILE    "0001"
+
+typedef struct pass_arg{
+  int * fd;
+  char * buffer;
+}pass_arg;
