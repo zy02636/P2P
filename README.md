@@ -1,6 +1,6 @@
 Since I am have an intership in the company, and just like other intership guys have experienced that 
-you will have plenty plenty plenty time during your so called 'intership'. After several weeks of working, 
-work load is fine and not that difficutl. Therefore I have decided to find some fun by myself. Here is some 
+you will have plenty plenty plenty time during your intership. After several weeks of working, 
+work load is fine and not that difficult. Therefore I have decided to find some fun by myself. Here is some 
 criteria that 'the fun' should fit:
 1. It can help me improve my prorgamming skills.
 2. It should be not too easy to implement, not like a project, but more like explore work.
