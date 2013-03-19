@@ -83,3 +83,6 @@ Log
 	2. ASCII file and binary file has not been handled proper. For the moment, it seems only
 	ASCII file can be sent by the socket, check binary later.
 	
+2013-03-19
+    You may notice that this project seems not updating for quite a long time.. But trust me, I will update soon. For the moment, I just try to figure out how to desgin a much simpler structure, but no compromise to flexibility and quanlity. The basic idea is to make two programs: node dispath center and nodes.
+
